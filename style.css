@@ -1,26 +1,26 @@
 :root {
-  --bg-primary: #faf3dd;
-  --bg-secondary: #f5edd4;
-  --card-bg: #ffffff;
-  --card-hover: #f8f4ea;
-  --surface: #f0e8d0;
+  --bg-primary: #FBF3E3;
+  --bg-secondary: #F3E8D0;
+  --card-bg: #FFFFFF;
+  --card-hover: #F7F3E8;
+  --surface: #F5EDE0;
 
-  --border: rgba(0, 0, 0, 0.06);
-  --border-hover: rgba(0, 0, 0, 0.12);
-  --border-active: rgba(0, 0, 0, 0.18);
+  --border: #E4D5B7;
+  --border-hover: #D4C5A7;
+  --border-active: #C4B597;
 
-  --primary: #ffa69e;
-  --primary-dark: #e88a82;
-  --primary-glow: rgba(255, 166, 158, 0.2);
-  --primary-subtle: rgba(255, 166, 158, 0.08);
+  --primary: #E8917E;
+  --primary-dark: #D97B66;
+  --primary-glow: rgba(232, 145, 126, 0.2);
+  --primary-subtle: rgba(232, 145, 126, 0.08);
 
-  --text: #2d2a24;
-  --text-secondary: #6b6559;
-  --text-muted: #9e9688;
+  --text: #1C1917;
+  --text-secondary: #6B6357;
+  --text-muted: #8C8476;
 
-  --success: #5b8c94;
-  --success-subtle: rgba(174, 217, 224, 0.15);
-  --error: #dc5a52;
+  --success: #7FA8A3;
+  --success-subtle: rgba(127, 168, 163, 0.12);
+  --error: #DC5A52;
   --error-subtle: rgba(220, 90, 82, 0.08);
 
   --font-gambetta: 'Gambetta', serif;
@@ -32,9 +32,9 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.07);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
@@ -117,7 +117,7 @@ body {
 
 .card.completed {
   background: var(--card-bg);
-  border-color: rgba(91, 140, 148, 0.3);
+  border-color: rgba(127, 168, 163, 0.25);
 }
 
 /* ========== Login ========== */
@@ -138,7 +138,7 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: rgba(255, 166, 158, 0.04);
+  background: rgba(232, 145, 126, 0.05);
   pointer-events: none;
 }
 
@@ -356,9 +356,9 @@ header h2 {
 
 .logout-btn {
   padding: 8px 16px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
+  background: #EAE0C8;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 500;
@@ -368,9 +368,8 @@ header h2 {
 }
 
 .logout-btn:hover {
-  background: var(--error-subtle);
-  border-color: rgba(248, 113, 113, 0.3);
-  color: var(--error);
+  background: #DED4BA;
+  color: var(--text);
 }
 
 /* ========== Add Question ========== */
@@ -403,8 +402,8 @@ header h2 {
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
+  background: #F5E0DA;
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 500;
@@ -417,7 +416,7 @@ header h2 {
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: var(--text-muted);
+  color: #B5493A;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -429,8 +428,8 @@ header h2 {
 }
 
 .voter-remove:hover {
-  background: var(--error-subtle);
-  color: var(--error);
+  background: rgba(181, 73, 58, 0.1);
+  color: #B5493A;
 }
 
 .add-voter-row {
@@ -523,11 +522,11 @@ header h2 {
 }
 
 .fresher-stat .stat-value {
-  color: var(--primary);
+  color: #7FA8A3;
 }
 
 .voter-stat .stat-value {
-  color: #b8f2e6;
+  color: #C9A84C;
 }
 
 .analytics-daily {
@@ -564,7 +563,7 @@ header h2 {
 .bar-track {
   flex: 1;
   height: 18px;
-  background: var(--bg-primary);
+  background: #F3E8D0;
   border-radius: 3px;
   overflow: hidden;
   position: relative;
@@ -579,11 +578,11 @@ header h2 {
 }
 
 .bar-fill.fresher-fill {
-  background: #ffa69e;
+  background: #E8917E;
 }
 
 .bar-fill.voter-fill {
-  background: #b8f2e6;
+  background: #C9A84C;
 }
 
 .bar-count {
@@ -626,7 +625,7 @@ header h2 {
 }
 
 .recent-type.fresher-type {
-  color: var(--primary);
+  color: #DD6E5A;
 }
 
 .recent-time {
@@ -890,7 +889,7 @@ header h2 {
 
 .rating-bar {
   height: 4px;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--bg-secondary);
   border-radius: 2px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -991,7 +990,7 @@ header h2 {
 }
 
 .toast-success {
-  background: #5b8c94;
+  background: #7FA8A3;
   color: white;
 }
 
