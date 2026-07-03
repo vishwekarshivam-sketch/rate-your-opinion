@@ -49,6 +49,12 @@ body {
     padding: 24px;
     margin-bottom: 20px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.card.completed {
+    background-color: rgba(34, 197, 94, 0.05); /* very light green tint */
+    border-color: var(--success);
 }
 
 h1, h2, h3 {

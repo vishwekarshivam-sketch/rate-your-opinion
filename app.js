@@ -146,6 +146,7 @@ function renderQuestions() {
             const resultsSection = node.querySelector('.results-section');
             const avgSpan = node.querySelector('.avg-rating');
             const countSpan = node.querySelector('.votes');
+            const votersList = node.querySelector('.voters-list');
             
             let sum = 0;
             voteKeys.forEach(k => sum += q.votes[k]);
@@ -153,7 +154,12 @@ function renderQuestions() {
             
             avgSpan.textContent = avg;
             countSpan.textContent = voteKeys.length;
+            votersList.textContent = `Voted by: ${voteKeys.join(', ')}`;
             resultsSection.classList.remove('hidden');
+
+            if (voteKeys.length >= 6) {
+                card.classList.add('completed');
+            }
         }
         
         questionsList.appendChild(node);
@@ -219,6 +225,7 @@ function updateCardResults(cardElement, questionData) {
         const resultsSection = cardElement.querySelector('.results-section');
         const avgSpan = cardElement.querySelector('.avg-rating');
         const countSpan = cardElement.querySelector('.votes');
+        const votersList = cardElement.querySelector('.voters-list');
         
         let sum = 0;
         voteKeys.forEach(k => sum += questionData.votes[k]);
@@ -226,7 +233,12 @@ function updateCardResults(cardElement, questionData) {
         
         avgSpan.textContent = avg;
         countSpan.textContent = voteKeys.length;
+        votersList.textContent = `Voted by: ${voteKeys.join(', ')}`;
         resultsSection.classList.remove('hidden');
+
+        if (voteKeys.length >= 6) {
+            cardElement.classList.add('completed');
+        }
     }
 }
 
