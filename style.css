@@ -378,6 +378,57 @@ header h2 {
   margin-bottom: 0;
 }
 
+.admin-actions {
+  display: none;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.admin-btn {
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  transition: all var(--fast);
+  font-family: inherit;
+}
+
+.admin-btn:hover {
+  background: var(--card-hover);
+  color: var(--text);
+}
+
+.admin-delete:hover {
+  border-color: rgba(248, 113, 113, 0.3);
+  background: var(--error-subtle);
+  color: var(--error);
+}
+
+.edit-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  margin: 8px 0;
+  resize: vertical;
+}
+
+.change-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
 /* ========== Rating ========== */
 
 .rating-section {

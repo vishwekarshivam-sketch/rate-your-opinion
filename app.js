@@ -252,6 +252,10 @@ function renderQuestions() {
       });
     }
 
+    if (currentUser === 'SHIVAM') {
+      card.querySelector('.admin-actions').style.display = 'flex';
+    }
+
     updateCardResults(card, q);
 
     const voteKeys = q.votes ? Object.keys(q.votes) : [];
@@ -301,7 +305,7 @@ async function submitVote(questionId, rating, cardElement) {
     updateCardResults(cardElement, updatedData);
 
     setTimeout(() => {
-      statusMsg.textContent = '';
+      statusMsg.textContent = 'Tap another number to change your vote';
       statusMsg.style.color = '';
       allBtns.forEach(b => b.disabled = false);
       voteInProgress = false;
@@ -319,6 +323,95 @@ async function submitVote(questionId, rating, cardElement) {
       statusMsg.style.color = '';
       voteInProgress = false;
     }, 2000);
+  }
+}
+
+// ========== Edit & Delete ==========
+
+questionsList.addEventListener('click', (e) => {
+  const card = e.target.closest('.question-card');
+  if (!card) return;
+  const id = card.dataset.questionId;
+
+  if (e.target.classList.contains('admin-edit')) {
+    enterEditMode(card, id);
+    return;
+  }
+  if (e.target.classList.contains('admin-delete')) {
+    deleteQuestion(id);
+    return;
+  }
+  if (e.target.classList.contains('admin-save')) {
+    saveEdit(card, id);
+    return;
+  }
+  if (e.target.classList.contains('admin-cancel')) {
+    cancelEdit(card);
+    return;
+  }
+});
+
+function enterEditMode(card) {
+  const textEl = card.querySelector('.question-text');
+  const actions = card.querySelector('.admin-actions');
+  const original = textEl.textContent;
+
+  const ta = document.createElement('textarea');
+  ta.value = original;
+  ta.className = 'edit-textarea';
+  ta.rows = 2;
+  textEl.replaceWith(ta);
+
+  actions.innerHTML =
+    '<button class="admin-btn admin-save">Save</button>' +
+    '<button class="admin-btn admin-cancel">Cancel</button>';
+
+  card.dataset.originalText = original;
+  ta.focus();
+}
+
+function cancelEdit(card) {
+  const ta = card.querySelector('.edit-textarea');
+  const original = card.dataset.originalText;
+  if (!ta || !original) return;
+  const p = document.createElement('p');
+  p.className = 'question-text';
+  p.textContent = original;
+  ta.replaceWith(p);
+
+  const actions = card.querySelector('.admin-actions');
+  actions.innerHTML =
+    '<button class="admin-btn admin-edit">Edit</button>' +
+    '<button class="admin-btn admin-delete">Delete</button>';
+}
+
+async function saveEdit(card, id) {
+  const ta = card.querySelector('.edit-textarea');
+  const text = ta.value.trim();
+  if (!text) return;
+  try {
+    const res = await fetch('/api/questions', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, text })
+    });
+    if (!res.ok) throw new Error('Failed to save');
+    showToast('Assumption updated');
+    await loadQuestions();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function deleteQuestion(id) {
+  if (!confirm('Delete this assumption permanently?')) return;
+  try {
+    const res = await fetch(`/api/questions?id=${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to delete');
+    showToast('Assumption deleted');
+    await loadQuestions();
+  } catch (err) {
+    showToast(err.message, 'error');
   }
 }
 
