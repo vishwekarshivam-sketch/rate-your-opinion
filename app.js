@@ -4,6 +4,7 @@ let currentUser = localStorage.getItem('ryo_user');
 let questionsData = [];
 let refreshTimer = null;
 let voteInProgress = false;
+let awaitingPassword = false;
 
 // DOM
 const loginScreen = document.getElementById('login-screen');
@@ -51,6 +52,7 @@ function showLoginScreen() {
   loginScreen.classList.add('active');
   mainScreen.classList.remove('active');
   stopAutoRefresh();
+  resetLoginState();
 }
 
 function enterMainScreen() {
@@ -66,14 +68,44 @@ function enterMainScreen() {
 
 // ========== Auth ==========
 
+const passwordInput = document.getElementById('password-input');
+
 loginBtn.addEventListener('click', () => {
-  const name = nameInput.value.trim().toUpperCase();
   const lockedUser = localStorage.getItem('ryo_locked_user');
+
+  if (awaitingPassword) {
+    const pw = passwordInput.value.trim();
+    if (pw === 'originaltb') {
+      awaitingPassword = false;
+      currentUser = 'SHIVAM';
+      localStorage.setItem('ryo_user', 'SHIVAM');
+      if (!lockedUser) localStorage.setItem('ryo_locked_user', 'SHIVAM');
+      resetLoginState();
+      enterMainScreen();
+    } else {
+      loginError.textContent = 'Wrong password.';
+      passwordInput.value = '';
+      passwordInput.focus();
+    }
+    return;
+  }
+
+  const name = nameInput.value.trim().toUpperCase();
 
   if (VALID_USERS.includes(name)) {
     if (lockedUser && lockedUser !== name) {
       loginError.textContent = `This device is locked to ${lockedUser}.`;
       showToast(`Device locked to ${lockedUser}`, 'error');
+      return;
+    }
+
+    if (name === 'SHIVAM') {
+      awaitingPassword = true;
+      passwordInput.classList.remove('hidden');
+      passwordInput.focus();
+      nameInput.disabled = true;
+      loginBtn.textContent = 'Verify';
+      loginError.textContent = '';
       return;
     }
 
@@ -91,6 +123,10 @@ nameInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') loginBtn.click();
 });
 
+passwordInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && awaitingPassword) loginBtn.click();
+});
+
 logoutBtn.addEventListener('click', () => {
   currentUser = null;
   localStorage.removeItem('ryo_user');
@@ -105,6 +141,16 @@ fresherBtn.addEventListener('click', () => {
   loginError.textContent = '';
   enterMainScreen();
 });
+
+function resetLoginState() {
+  awaitingPassword = false;
+  nameInput.disabled = false;
+  loginBtn.textContent = 'Continue';
+  passwordInput.classList.add('hidden');
+  passwordInput.value = '';
+  nameInput.value = '';
+  loginError.textContent = '';
+}
 
 // ========== Auto Refresh ==========
 
