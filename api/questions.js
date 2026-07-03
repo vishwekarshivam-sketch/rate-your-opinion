@@ -1,7 +1,9 @@
-const { kv } = require('@vercel/kv');
-const { v4: uuidv4 } = require('crypto'); // Built into Node.js 14+ via crypto.randomUUID(), but we'll just use a simple random string for id if needed
+const { createClient } = require('@supabase/supabase-js');
 
-// simple fallback ID generator since crypto might have issues in some edge Vercel environments
+const SUPABASE_URL = 'https://qyyqxqjmphbszbgutjlr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eXF4cWptcGhic3piZ3V0amxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwNTk3MDAsImV4cCI6MjA5ODYzNTcwMH0.q_-Ew8EiaskhhIu3vaDP0veIcPkjla0ONldHSZxZ39o';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
 const INITIAL_QUESTIONS = [
@@ -35,24 +37,27 @@ const INITIAL_QUESTIONS = [
   id: generateId(),
   text,
   votes: {},
-  createdAt: Date.now()
+  created_at: Date.now()
 }));
 
 module.exports = async (req, res) => {
   if (req.method === 'GET') {
     try {
-      let questions = await kv.get('ryo_questions');
-      
-      if (!questions) {
-        // Initialize if empty
-        questions = INITIAL_QUESTIONS;
-        await kv.set('ryo_questions', questions);
+      const { data, error } = await supabase
+        .from('questions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        // If table doesn't exist or is empty, we can just return the initial list as a fallback
+        return res.status(200).json(INITIAL_QUESTIONS);
       }
       
-      // Sort so newest is at the top
-      questions.sort((a, b) => b.createdAt - a.createdAt);
-      
-      return res.status(200).json(questions);
+      if (!data || data.length === 0) {
+        return res.status(200).json(INITIAL_QUESTIONS);
+      }
+
+      return res.status(200).json(data);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Failed to fetch questions' });
@@ -64,19 +69,24 @@ module.exports = async (req, res) => {
       const { text, user } = req.body;
       if (!text) return res.status(400).json({ error: 'Text is required' });
       
-      let questions = await kv.get('ryo_questions') || [];
-      
       const newQuestion = {
         id: generateId(),
         text,
         votes: {},
-        createdAt: Date.now()
+        created_at: Date.now()
       };
       
-      questions.push(newQuestion);
-      await kv.set('ryo_questions', questions);
+      const { data, error } = await supabase
+        .from('questions')
+        .insert([newQuestion])
+        .select();
+
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Failed to add question' });
+      }
       
-      return res.status(201).json(newQuestion);
+      return res.status(201).json(data[0]);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Failed to add question' });
