@@ -52,10 +52,12 @@ function showToast(message, type = 'success') {
 
 // ========== Init ==========
 
-function init() {
-  loadVoters();
+async function init() {
+  await loadVoters();
   if (currentUser && (validUsers.includes(currentUser) || currentUser === 'FRESHER')) {
     enterMainScreen();
+  } else {
+    showLoginScreen();
   }
 }
 
