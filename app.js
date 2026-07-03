@@ -47,9 +47,20 @@ function showMainScreen() {
 // Auth Logic
 loginBtn.addEventListener('click', () => {
     const name = nameInput.value.trim().toUpperCase();
+    const lockedUser = localStorage.getItem('ryo_locked_user');
+    
     if (VALID_USERS.includes(name)) {
+        if (lockedUser && lockedUser !== name) {
+            loginError.textContent = `This device is locked to ${lockedUser}. You cannot log in as another user.`;
+            return;
+        }
+        
         currentUser = name;
         localStorage.setItem('ryo_user', name);
+        if (!lockedUser) {
+            localStorage.setItem('ryo_locked_user', name);
+        }
+        
         loginError.textContent = '';
         showMainScreen();
     } else {
@@ -169,6 +180,7 @@ function renderQuestions() {
             avgSpan.textContent = avg;
             countSpan.textContent = voteKeys.length;
             votersList.textContent = `Voted by: ${voteKeys.join(', ')}`;
+            votersList.style.display = (currentUser === 'SHIVAM') ? 'block' : 'none';
             
             if (voteKeys.length >= 6) {
                 card.classList.add('completed');
@@ -177,6 +189,7 @@ function renderQuestions() {
             avgSpan.textContent = '0.0';
             countSpan.textContent = '0';
             votersList.textContent = 'No votes yet';
+            votersList.style.display = (currentUser === 'SHIVAM') ? 'block' : 'none';
         }
 
         // Freshers always see results section, voters only see it if there are votes
@@ -256,6 +269,7 @@ function updateCardResults(cardElement, questionData) {
         avgSpan.textContent = avg;
         countSpan.textContent = voteKeys.length;
         votersList.textContent = `Voted by: ${voteKeys.join(', ')}`;
+        votersList.style.display = (currentUser === 'SHIVAM') ? 'block' : 'none';
         resultsSection.classList.remove('hidden');
 
         if (voteKeys.length >= 6) {
