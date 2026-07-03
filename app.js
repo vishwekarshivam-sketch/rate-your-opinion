@@ -50,7 +50,7 @@ loginBtn.addEventListener('click', () => {
         loginError.textContent = '';
         showMainScreen();
     } else {
-        loginError.textContent = 'Invalid name. Must be one of: ' + VALID_USERS.join(', ');
+        loginError.textContent = 'Invalid name. Please enter a recognized first name.';
     }
 });
 
