@@ -9,10 +9,10 @@
   --border-hover: rgba(255, 255, 255, 0.09);
   --border-active: rgba(255, 255, 255, 0.14);
 
-  --primary: #8872f0;
-  --primary-dark: #6f59d8;
-  --primary-glow: rgba(136, 114, 240, 0.2);
-  --primary-subtle: rgba(136, 114, 240, 0.07);
+  --primary: #d4a04a;
+  --primary-dark: #b8893a;
+  --primary-glow: rgba(212, 160, 74, 0.15);
+  --primary-subtle: rgba(212, 160, 74, 0.07);
 
   --text: #eaeaee;
   --text-secondary: #989aaa;
@@ -1000,7 +1000,7 @@ header h2 {
 }
 
 .toast-info {
-  background: #4f46e5;
+  background: #d4a04a;
 }
 
 /* ========== No Questions ========== */
