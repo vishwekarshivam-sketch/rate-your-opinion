@@ -1,27 +1,27 @@
 :root {
-  --bg-primary: #0F0E13;
-  --bg-secondary: #242230;
-  --card-bg: #18171F;
-  --card-hover: #1E1D28;
-  --surface: #1D1C26;
+  --bg-primary: #F5F6F8;
+  --bg-secondary: #EAECF0;
+  --card-bg: #FFFFFF;
+  --card-hover: #F8F9FA;
+  --surface: #F0F2F5;
 
-  --border: #34313F;
-  --border-hover: #3E3B4A;
-  --border-active: #484558;
+  --border: #D0D5DD;
+  --border-hover: #B8C0CC;
+  --border-active: #A0A8B8;
 
-  --primary: #FF6B5B;
-  --primary-dark: #E85444;
-  --primary-glow: rgba(255, 107, 91, 0.2);
-  --primary-subtle: rgba(255, 107, 91, 0.07);
+  --primary: #1D4ED8;
+  --primary-dark: #1E40AF;
+  --primary-glow: rgba(29, 78, 216, 0.15);
+  --primary-subtle: rgba(29, 78, 216, 0.06);
 
-  --text: #F5F3EE;
-  --text-secondary: #9C98A8;
-  --text-muted: #6D6978;
+  --text: #101828;
+  --text-secondary: #667085;
+  --text-muted: #98A0B0;
 
-  --success: #4ADE80;
-  --success-subtle: rgba(74, 222, 128, 0.08);
-  --error: #E85444;
-  --error-subtle: rgba(232, 84, 68, 0.08);
+  --success: #12B76A;
+  --success-subtle: rgba(18, 183, 106, 0.08);
+  --error: #DC5A52;
+  --error-subtle: rgba(220, 90, 82, 0.08);
 
   --font-gambetta: 'Gambetta', serif;
   --font-clash: 'Clash Display', sans-serif;
@@ -32,9 +32,9 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.06);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
@@ -117,7 +117,7 @@ body {
 
 .card.completed {
   background: var(--card-bg);
-  border-color: rgba(74, 222, 128, 0.2);
+  border-color: rgba(18, 183, 106, 0.2);
 }
 
 /* ========== Login ========== */
@@ -138,7 +138,7 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: rgba(255, 107, 91, 0.04);
+  background: rgba(29, 78, 216, 0.04);
   pointer-events: none;
 }
 
@@ -356,7 +356,7 @@ header h2 {
 
 .logout-btn {
   padding: 8px 16px;
-  background: #242230;
+  background: #F2F4F7;
   border: 1px solid transparent;
   color: var(--text-secondary);
   border-radius: var(--radius-sm);
@@ -368,7 +368,7 @@ header h2 {
 }
 
 .logout-btn:hover {
-  background: #2E2B3A;
+  background: #E8ECF0;
   color: var(--text);
 }
 
@@ -402,7 +402,7 @@ header h2 {
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  background: #2A2733;
+  background: #DBEAFE;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   font-size: 13px;
@@ -416,7 +416,7 @@ header h2 {
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: #FF6B5B;
+  color: #1D4ED8;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -428,8 +428,8 @@ header h2 {
 }
 
 .voter-remove:hover {
-  background: rgba(255, 107, 91, 0.1);
-  color: #FF6B5B;
+  background: rgba(29, 78, 216, 0.08);
+  color: #1D4ED8;
 }
 
 .add-voter-row {
@@ -522,11 +522,11 @@ header h2 {
 }
 
 .fresher-stat .stat-value {
-  color: #4ADE80;
+  color: #F79009;
 }
 
 .voter-stat .stat-value {
-  color: #E8C96A;
+  color: #12B76A;
 }
 
 .analytics-daily {
@@ -563,7 +563,7 @@ header h2 {
 .bar-track {
   flex: 1;
   height: 18px;
-  background: #242230;
+  background: #EAECF0;
   border-radius: 3px;
   overflow: hidden;
   position: relative;
@@ -578,11 +578,11 @@ header h2 {
 }
 
 .bar-fill.fresher-fill {
-  background: #FF6B5B;
+  background: #1D4ED8;
 }
 
 .bar-fill.voter-fill {
-  background: #4ADE80;
+  background: #12B76A;
 }
 
 .bar-count {
@@ -625,7 +625,7 @@ header h2 {
 }
 
 .recent-type.fresher-type {
-  color: #FB923C;
+  color: #2E90FA;
 }
 
 .recent-time {
@@ -990,17 +990,17 @@ header h2 {
 }
 
 .toast-success {
-  background: #4ADE80;
-  color: #0F0E13;
+  background: #12B76A;
+  color: white;
 }
 
 .toast-error {
-  background: #E85444;
+  background: #dc5a52;
   color: white;
 }
 
 .toast-info {
-  background: #FF6B5B;
+  background: var(--primary);
   color: white;
 }
 
