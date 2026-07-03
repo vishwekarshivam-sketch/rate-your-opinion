@@ -215,7 +215,17 @@ function renderQuestions() {
   const isFresher = currentUser === 'FRESHER';
   const fragment = document.createDocumentFragment();
 
-  questionsData.forEach(q => {
+  const sorted = [...questionsData].sort((a, b) => {
+    const ta = new Date(a.created_at).getTime();
+    const tb = new Date(b.created_at).getTime();
+    if (isFresher) return tb - ta;
+    const aVoted = a.votes && a.votes[currentUser] !== undefined;
+    const bVoted = b.votes && b.votes[currentUser] !== undefined;
+    if (aVoted !== bVoted) return aVoted ? 1 : -1;
+    return tb - ta;
+  });
+
+  sorted.forEach(q => {
     const node = questionTemplate.content.cloneNode(true);
     const card = node.querySelector('.question-card');
     card.dataset.questionId = q.id;
