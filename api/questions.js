@@ -54,6 +54,11 @@ module.exports = async (req, res) => {
       }
       
       if (!data || data.length === 0) {
+        // Seed the database so we can vote on them
+        const { error: insertError } = await supabase.from('questions').insert(INITIAL_QUESTIONS);
+        if (insertError) {
+          console.error("Failed to seed database:", insertError);
+        }
         return res.status(200).json(INITIAL_QUESTIONS);
       }
 
