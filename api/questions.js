@@ -2,7 +2,12 @@ const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = 'https://qyyqxqjmphbszbgutjlr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eXF4cWptcGhic3piZ3V0amxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwNTk3MDAsImV4cCI6MjA5ODYzNTcwMH0.q_-Ew8EiaskhhIu3vaDP0veIcPkjla0ONldHSZxZ39o';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let supabase = null;
+function getDb() {
+  if (!supabase) supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  return supabase;
+}
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -41,47 +46,46 @@ const INITIAL_QUESTIONS = [
 }));
 
 module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
   if (req.method === 'GET') {
     try {
-      const { data, error } = await supabase
+      const db = getDb();
+      const { data, error } = await db
         .from('questions')
-        .select('*')
+        .select('id, text, votes, created_at')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        // If table doesn't exist or is empty, we can just return the initial list as a fallback
-        return res.status(200).json(INITIAL_QUESTIONS);
-      }
-      
-      if (!data || data.length === 0) {
-        // Seed the database so we can vote on them
-        const { error: insertError } = await supabase.from('questions').insert(INITIAL_QUESTIONS);
-        if (insertError) {
-          console.error("Failed to seed database:", insertError);
-        }
+      if (error || !data || data.length === 0) {
+        const { error: insertError } = await db.from('questions').insert(INITIAL_QUESTIONS);
+        if (insertError) console.error('Seed failed:', insertError);
+
+        res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=60');
         return res.status(200).json(INITIAL_QUESTIONS);
       }
 
+      res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=60');
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      console.error('GET /api/questions error:', error);
       return res.status(500).json({ error: 'Failed to fetch questions' });
     }
-  } 
-  
+  }
+
   if (req.method === 'POST') {
     try {
       const { text, user } = req.body;
       if (!text) return res.status(400).json({ error: 'Text is required' });
-      
+
+      const db = getDb();
       const newQuestion = {
         id: generateId(),
         text,
         votes: {},
         created_at: Date.now()
       };
-      
-      const { data, error } = await supabase
+
+      const { data, error } = await db
         .from('questions')
         .insert([newQuestion])
         .select();
@@ -90,7 +94,8 @@ module.exports = async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: 'Failed to add question' });
       }
-      
+
+      res.setHeader('Cache-Control', 'no-store');
       return res.status(201).json(data[0]);
     } catch (error) {
       console.error(error);
