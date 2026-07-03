@@ -8,6 +8,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <div id="app">
@@ -55,6 +61,29 @@
           <button id="add-voter-btn" class="btn-primary" style="width: auto; padding: 12px 20px; flex-shrink: 0;">Add</button>
         </div>
         <p id="voter-error" class="error-text"></p>
+      </div>
+
+      <div class="card analytics-card">
+        <div class="analytics-header">
+          <h3>Analytics</h3>
+          <button id="analytics-refresh-btn" class="analytics-refresh-btn" title="Refresh data">&#x21bb;</button>
+        </div>
+        <div class="analytics-stats">
+          <div class="stat-card">
+            <span class="stat-value" id="analytics-total">0</span>
+            <span class="stat-label">Total Visits</span>
+          </div>
+          <div class="stat-card fresher-stat">
+            <span class="stat-value" id="analytics-fresher">0</span>
+            <span class="stat-label">Freshers</span>
+          </div>
+          <div class="stat-card voter-stat">
+            <span class="stat-value" id="analytics-voter">0</span>
+            <span class="stat-label">Voters</span>
+          </div>
+        </div>
+        <div id="analytics-daily" class="analytics-daily"></div>
+        <div id="analytics-recent" class="analytics-recent"></div>
       </div>
 
       <div class="card filter-card">

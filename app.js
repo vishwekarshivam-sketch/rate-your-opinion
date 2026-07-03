@@ -27,6 +27,13 @@ const voterList = document.getElementById('voter-list');
 const addVoterInput = document.getElementById('add-voter-input');
 const addVoterBtn = document.getElementById('add-voter-btn');
 const voterError = document.getElementById('voter-error');
+const analyticsCard = document.querySelector('.analytics-card');
+const analyticsTotal = document.getElementById('analytics-total');
+const analyticsFresher = document.getElementById('analytics-fresher');
+const analyticsVoter = document.getElementById('analytics-voter');
+const analyticsDaily = document.getElementById('analytics-daily');
+const analyticsRecent = document.getElementById('analytics-recent');
+const analyticsRefreshBtn = document.getElementById('analytics-refresh-btn');
 
 // ========== Toast ==========
 
@@ -77,7 +84,10 @@ function enterMainScreen() {
   const isAdmin = currentUser === 'SHIVAM';
   document.querySelector('.add-question-card').style.display = isAdmin ? 'block' : 'none';
   document.querySelector('.admin-voters-card').style.display = isAdmin ? 'block' : 'none';
+  analyticsCard.style.display = isAdmin ? 'block' : 'none';
   if (isAdmin) renderVoterList();
+  if (isAdmin) loadAnalytics();
+  recordVisit();
   loadQuestions();
   startAutoRefresh();
 }
@@ -262,6 +272,93 @@ addQuestionBtn.addEventListener('click', async () => {
     addQuestionBtn.disabled = false;
     addQuestionBtn.textContent = 'Add Question';
   }
+});
+
+// ========== Analytics ==========
+
+function recordVisit() {
+  if (sessionStorage.getItem('ryo_visit_recorded')) return;
+
+  let sessionId = localStorage.getItem('ryo_session_id');
+  if (!sessionId) {
+    try { sessionId = crypto.randomUUID(); } catch { sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2); }
+    localStorage.setItem('ryo_session_id', sessionId);
+  }
+
+  fetch('/api/analytics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_type: currentUser, session_id: sessionId })
+  }).catch(() => {});
+
+  sessionStorage.setItem('ryo_visit_recorded', '1');
+}
+
+async function loadAnalytics() {
+  analyticsTotal.textContent = '...';
+  analyticsFresher.textContent = '...';
+  analyticsVoter.textContent = '...';
+  analyticsDaily.innerHTML = '';
+  analyticsRecent.innerHTML = '';
+
+  try {
+    const res = await fetch('/api/analytics');
+    if (!res.ok) throw new Error('Failed to load analytics');
+    const data = await res.json();
+    renderAnalytics(data);
+  } catch (err) {
+    analyticsDaily.innerHTML = `<div class="analytics-empty">Could not load analytics.</div>`;
+    analyticsRecent.innerHTML = '';
+    showToast(err.message, 'error');
+  }
+}
+
+function renderAnalytics(data) {
+  analyticsTotal.textContent = data.total;
+  analyticsFresher.textContent = data.fresher;
+  analyticsVoter.textContent = data.voter;
+
+  if (data.daily && data.daily.length > 0) {
+    const maxVal = Math.max(...data.daily.map(d => d.total));
+    let html = '<div class="analytics-daily-title">Daily Visits</div>';
+    data.daily.slice(-14).forEach(d => {
+      const pct = Math.max((d.total / maxVal) * 100, 2);
+      const date = new Date(d.date + 'T00:00:00');
+      const label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      html += `<div class="analytics-bar-row">
+        <span class="bar-label">${label}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <span class="bar-count">${d.total} (${d.fresher}F · ${d.voter}V)</span>
+      </div>`;
+    });
+    analyticsDaily.innerHTML = html;
+  } else {
+    analyticsDaily.innerHTML = '<div class="analytics-empty">No visits recorded yet.</div>';
+  }
+
+  if (data.recent && data.recent.length > 0) {
+    let html = '<div class="analytics-recent-title">Recent Visitors</div>';
+    data.recent.slice(0, 10).forEach(v => {
+      const time = new Date(v.created_at).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      const typeClass = v.user_type === 'FRESHER' ? 'fresher-type' : '';
+      html += `<div class="analytics-recent-item">
+        <span class="recent-type ${typeClass}">${v.user_type}</span>
+        <span class="recent-time">${time}</span>
+      </div>`;
+    });
+    analyticsRecent.innerHTML = html;
+  } else {
+    analyticsRecent.innerHTML = '';
+  }
+}
+
+analyticsRefreshBtn.addEventListener('click', () => {
+  analyticsRefreshBtn.style.transform = 'rotate(360deg)';
+  loadAnalytics().finally(() => {
+    setTimeout(() => { analyticsRefreshBtn.style.transform = ''; }, 400);
+  });
 });
 
 // ========== Render ==========
