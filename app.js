@@ -1,4 +1,4 @@
-const VALID_USERS = ['AJAY', 'SARVESH', 'SHIVAM', 'SARBJEET', 'OM', 'JATIN', 'AVIRAL'];
+let validUsers = ['AJAY', 'SARVESH', 'SHIVAM', 'SARBJEET', 'OM', 'JATIN', 'AVIRAL'];
 
 let currentUser = localStorage.getItem('ryo_user');
 let questionsData = [];
@@ -22,6 +22,10 @@ const addQuestionBtn = document.getElementById('add-question-btn');
 const addError = document.getElementById('add-error');
 const fresherBtn = document.getElementById('fresher-btn');
 const toastContainer = document.getElementById('toast-container');
+const voterList = document.getElementById('voter-list');
+const addVoterInput = document.getElementById('add-voter-input');
+const addVoterBtn = document.getElementById('add-voter-btn');
+const voterError = document.getElementById('voter-error');
 
 // ========== Toast ==========
 
@@ -41,9 +45,17 @@ function showToast(message, type = 'success') {
 // ========== Init ==========
 
 function init() {
-  if (currentUser && (VALID_USERS.includes(currentUser) || currentUser === 'FRESHER')) {
+  loadVoters();
+  if (currentUser && (validUsers.includes(currentUser) || currentUser === 'FRESHER')) {
     enterMainScreen();
   }
+}
+
+async function loadVoters() {
+  try {
+    const res = await fetch('/api/users');
+    if (res.ok) validUsers = await res.json();
+  } catch {}
 }
 
 // ========== Navigation ==========
@@ -61,7 +73,10 @@ function enterMainScreen() {
   const initial = currentUser === 'FRESHER' ? 'F' : currentUser.charAt(0);
   userAvatar.textContent = initial;
   userDisplay.textContent = currentUser;
-  document.querySelector('.add-question-card').style.display = (currentUser === 'SHIVAM') ? 'block' : 'none';
+  const isAdmin = currentUser === 'SHIVAM';
+  document.querySelector('.add-question-card').style.display = isAdmin ? 'block' : 'none';
+  document.querySelector('.admin-voters-card').style.display = isAdmin ? 'block' : 'none';
+  if (isAdmin) renderVoterList();
   loadQuestions();
   startAutoRefresh();
 }
@@ -92,7 +107,7 @@ loginBtn.addEventListener('click', () => {
 
   const name = nameInput.value.trim().toUpperCase();
 
-  if (VALID_USERS.includes(name)) {
+  if (validUsers.includes(name)) {
     if (lockedUser && lockedUser !== name) {
       loginError.textContent = `This device is locked to ${lockedUser}.`;
       showToast(`Device locked to ${lockedUser}`, 'error');
@@ -370,6 +385,77 @@ async function submitVote(questionId, rating, cardElement) {
       voteInProgress = false;
     }, 2000);
   }
+}
+
+// ========== Voter Management ==========
+
+addVoterBtn.addEventListener('click', async () => {
+  const name = addVoterInput.value.trim().toUpperCase();
+  if (!name) return;
+  if (name === 'SHIVAM') { voterError.textContent = 'Admin already has access.'; return; }
+  if (validUsers.includes(name)) { voterError.textContent = 'Voter already exists.'; return; }
+
+  addVoterBtn.disabled = true;
+  addVoterBtn.textContent = 'Adding...';
+  voterError.textContent = '';
+
+  try {
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to add');
+    }
+
+    addVoterInput.value = '';
+    validUsers.push(name);
+    renderVoterList();
+    showToast(`${name} added as voter`);
+  } catch (err) {
+    voterError.textContent = err.message;
+    showToast(err.message, 'error');
+  } finally {
+    addVoterBtn.disabled = false;
+    addVoterBtn.textContent = 'Add';
+  }
+});
+
+addVoterInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') addVoterBtn.click();
+});
+
+voterList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.voter-remove');
+  if (!btn) return;
+  const name = btn.dataset.name;
+
+  try {
+    const res = await fetch(`/api/users?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to remove');
+    }
+    validUsers = validUsers.filter(n => n !== name);
+    renderVoterList();
+    showToast(`${name} removed`);
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+});
+
+function renderVoterList() {
+  voterList.innerHTML = validUsers
+    .filter(n => n !== 'SHIVAM')
+    .map(n =>
+      `<div class="voter-item">` +
+        `<span>${n}</span>` +
+        `<button class="voter-remove" data-name="${n}">✕</button>` +
+      `</div>`
+    ).join('');
 }
 
 // ========== Edit & Delete ==========

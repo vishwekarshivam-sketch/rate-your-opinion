@@ -353,6 +353,63 @@ header h2 {
   color: var(--text-secondary);
 }
 
+.admin-voters-card {
+  margin-bottom: 20px;
+}
+
+.voter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  min-height: 20px;
+}
+
+.voter-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.voter-remove {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all var(--fast);
+  padding: 0;
+  line-height: 1;
+}
+
+.voter-remove:hover {
+  background: var(--error-subtle);
+  color: var(--error);
+}
+
+.add-voter-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add-voter-row input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
 /* ========== Question Cards ========== */
 
 .question-card {
