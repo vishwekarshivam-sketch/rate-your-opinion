@@ -187,6 +187,31 @@ body {
   background: var(--border);
 }
 
+.instagram-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--fast);
+}
+
+.instagram-link:hover {
+  color: var(--text-secondary);
+}
+
+.instagram-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 /* ========== Typography ========== */
 
 h1, h2, h3, h4 {
