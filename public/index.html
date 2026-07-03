@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Your Opinion</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="card">
+                <h1>Rate Your Opinion</h1>
+                <p>Enter your first name to continue</p>
+                <input type="text" id="name-input" placeholder="e.g. AJAY" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+                <button id="login-btn">Log In</button>
+                <p id="login-error" class="error"></p>
+            </div>
+        </div>
+
+        <!-- Main Screen -->
+        <div id="main-screen" class="screen">
+            <header>
+                <h2>Welcome, <span id="user-display"></span></h2>
+                <button id="logout-btn" class="secondary-btn">Logout</button>
+            </header>
+
+            <div class="card add-question-card">
+                <h3>Add a New Assumption</h3>
+                <textarea id="new-question-input" placeholder="Type a new assumption here..."></textarea>
+                <button id="add-question-btn">Add Question</button>
+                <p id="add-error" class="error"></p>
+            </div>
+
+            <div class="questions-container" id="questions-list">
+                <!-- Questions will be injected here via JS -->
+                <div class="loader">Loading questions...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template for a question card -->
+    <template id="question-template">
+        <div class="card question-card">
+            <h3 class="question-text"></h3>
+            <div class="rating-section">
+                <p class="rating-prompt">Rate this assumption (1-10):</p>
+                <div class="rating-buttons">
+                    <button class="rate-btn" data-val="1">1</button>
+                    <button class="rate-btn" data-val="2">2</button>
+                    <button class="rate-btn" data-val="3">3</button>
+                    <button class="rate-btn" data-val="4">4</button>
+                    <button class="rate-btn" data-val="5">5</button>
+                    <button class="rate-btn" data-val="6">6</button>
+                    <button class="rate-btn" data-val="7">7</button>
+                    <button class="rate-btn" data-val="8">8</button>
+                    <button class="rate-btn" data-val="9">9</button>
+                    <button class="rate-btn" data-val="10">10</button>
+                </div>
+                <div class="status-msg"></div>
+            </div>
+            <div class="results-section hidden">
+                <p>Average Rating: <span class="avg-rating font-bold"></span> / 10</p>
+                <p class="vote-count text-sm text-gray">Based on <span class="votes"></span> votes</p>
+            </div>
+        </div>
+    </template>
+
+    <script src="app.js"></script>
+</body>
+</html>
