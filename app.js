@@ -183,7 +183,10 @@ async function submitVote(questionId, rating, allBtns, statusMsg, cardElement) {
             })
         });
         
-        if (!res.ok) throw new Error('Failed to save vote');
+        if (!res.ok) {
+            const errText = await res.json();
+            throw new Error(errText.error || 'Failed to save vote');
+        }
         
         const updatedData = await res.json();
         
@@ -203,7 +206,7 @@ async function submitVote(questionId, rating, allBtns, statusMsg, cardElement) {
         }
         
     } catch (err) {
-        statusMsg.textContent = 'Error saving vote.';
+        statusMsg.textContent = err.message || 'Error saving vote.';
         statusMsg.style.color = 'var(--error)';
         allBtns.forEach(b => b.disabled = false);
         console.error(err);
