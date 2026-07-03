@@ -5,6 +5,7 @@ let questionsData = [];
 let refreshTimer = null;
 let voteInProgress = false;
 let awaitingPassword = false;
+let currentFilter = localStorage.getItem('ryo_filter') || 'unvoted';
 
 // DOM
 const loginScreen = document.getElementById('login-screen');
@@ -276,15 +277,9 @@ function renderQuestions() {
   const isFresher = currentUser === 'FRESHER';
   const fragment = document.createDocumentFragment();
 
-  const sorted = [...questionsData].sort((a, b) => {
-    const ta = new Date(a.created_at).getTime();
-    const tb = new Date(b.created_at).getTime();
-    if (isFresher) return tb - ta;
-    const aVoted = a.votes && a.votes[currentUser] !== undefined;
-    const bVoted = b.votes && b.votes[currentUser] !== undefined;
-    if (aVoted !== bVoted) return aVoted ? 1 : -1;
-    return tb - ta;
-  });
+  if (isFresher && currentFilter === 'unvoted') currentFilter = 'newest';
+
+  const sorted = [...questionsData].sort(sortQuestions);
 
   sorted.forEach(q => {
     const node = questionTemplate.content.cloneNode(true);
@@ -328,6 +323,75 @@ function renderQuestions() {
   });
 
   questionsList.appendChild(fragment);
+  renderFilterBar();
+}
+
+function getAvg(q) {
+  const keys = q.votes ? Object.keys(q.votes) : [];
+  if (keys.length === 0) return undefined;
+  return keys.reduce((acc, k) => acc + q.votes[k], 0) / keys.length;
+}
+
+function sortQuestions(a, b) {
+  const ta = new Date(a.created_at).getTime();
+  const tb = new Date(b.created_at).getTime();
+
+  switch (currentFilter) {
+    case 'unvoted': {
+      const aVoted = a.votes && a.votes[currentUser] !== undefined;
+      const bVoted = b.votes && b.votes[currentUser] !== undefined;
+      if (aVoted !== bVoted) return aVoted ? 1 : -1;
+      return tb - ta;
+    }
+    case 'newest':
+      return tb - ta;
+    case 'votes': {
+      const ac = a.votes ? Object.keys(a.votes).length : 0;
+      const bc = b.votes ? Object.keys(b.votes).length : 0;
+      if (ac !== bc) return bc - ac;
+      return tb - ta;
+    }
+    case 'highest': {
+      const aa = getAvg(a);
+      const ba = getAvg(b);
+      if (aa === undefined && ba === undefined) return tb - ta;
+      if (aa === undefined) return 1;
+      if (ba === undefined) return -1;
+      if (aa !== ba) return ba - aa;
+      return tb - ta;
+    }
+    case 'lowest': {
+      const aa = getAvg(a);
+      const ba = getAvg(b);
+      if (aa === undefined && ba === undefined) return tb - ta;
+      if (aa === undefined) return 1;
+      if (ba === undefined) return -1;
+      if (aa !== ba) return aa - ba;
+      return tb - ta;
+    }
+    default:
+      return tb - ta;
+  }
+}
+
+// ========== Filter Bar ==========
+
+const filterCard = document.querySelector('.filter-card');
+
+filterCard.addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  const sort = btn.dataset.sort;
+  if (sort === currentFilter) return;
+  currentFilter = sort;
+  localStorage.setItem('ryo_filter', sort);
+  renderQuestions();
+});
+
+function renderFilterBar() {
+  filterCard.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.sort === currentFilter);
+  });
 }
 
 // ========== Vote ==========

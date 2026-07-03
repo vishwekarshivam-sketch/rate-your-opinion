@@ -410,6 +410,49 @@ header h2 {
   margin-bottom: 0;
 }
 
+.filter-card {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.filter-buttons::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--fast);
+  white-space: nowrap;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.filter-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-secondary);
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
 /* ========== Question Cards ========== */
 
 .question-card {
