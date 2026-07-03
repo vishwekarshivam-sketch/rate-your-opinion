@@ -20,8 +20,10 @@ const addQuestionBtn = document.getElementById('add-question-btn');
 const addError = document.getElementById('add-error');
 
 // Initialization
+const fresherBtn = document.getElementById('fresher-btn');
+
 function init() {
-    if (currentUser && VALID_USERS.includes(currentUser)) {
+    if (currentUser && (VALID_USERS.includes(currentUser) || currentUser === 'FRESHER')) {
         showMainScreen();
     } else {
         showLoginScreen();
@@ -38,6 +40,7 @@ function showMainScreen() {
     loginScreen.classList.remove('active');
     mainScreen.classList.add('active');
     userDisplay.textContent = currentUser;
+    document.querySelector('.add-question-card').style.display = (currentUser === 'SHIVAM') ? 'block' : 'none';
     loadQuestions();
 }
 
@@ -63,6 +66,13 @@ logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('ryo_user');
     nameInput.value = '';
     showLoginScreen();
+});
+
+fresherBtn.addEventListener('click', () => {
+    currentUser = 'FRESHER';
+    localStorage.setItem('ryo_user', 'FRESHER');
+    loginError.textContent = '';
+    showMainScreen();
 });
 
 // Data Loading
@@ -119,35 +129,39 @@ function renderQuestions() {
         return;
     }
 
+    const isFresher = currentUser === 'FRESHER';
+
     questionsData.forEach(q => {
         const node = questionTemplate.content.cloneNode(true);
         const card = node.querySelector('.question-card');
         
         node.querySelector('.question-text').textContent = q.text;
         
-        // Find if current user already voted
-        const userVote = q.votes ? q.votes[currentUser] : null;
-        
+        const ratingSection = node.querySelector('.rating-section');
+        const resultsSection = node.querySelector('.results-section');
         const rateBtns = node.querySelectorAll('.rate-btn');
         const statusMsg = node.querySelector('.status-msg');
         
-        rateBtns.forEach(btn => {
-            const val = parseInt(btn.dataset.val);
-            if (userVote === val) {
-                btn.classList.add('selected');
-            }
-            
-            btn.addEventListener('click', () => submitVote(q.id, val, rateBtns, statusMsg, card));
-        });
+        if (isFresher) {
+            ratingSection.style.display = 'none';
+        } else {
+            const userVote = q.votes ? q.votes[currentUser] : null;
+            rateBtns.forEach(btn => {
+                const val = parseInt(btn.dataset.val);
+                if (userVote === val) {
+                    btn.classList.add('selected');
+                }
+                
+                btn.addEventListener('click', () => submitVote(q.id, val, rateBtns, statusMsg, card));
+            });
+        }
 
-        // Show results if there are votes
         const voteKeys = q.votes ? Object.keys(q.votes) : [];
+        const avgSpan = node.querySelector('.avg-rating');
+        const countSpan = node.querySelector('.votes');
+        const votersList = node.querySelector('.voters-list');
+        
         if (voteKeys.length > 0) {
-            const resultsSection = node.querySelector('.results-section');
-            const avgSpan = node.querySelector('.avg-rating');
-            const countSpan = node.querySelector('.votes');
-            const votersList = node.querySelector('.voters-list');
-            
             let sum = 0;
             voteKeys.forEach(k => sum += q.votes[k]);
             const avg = (sum / voteKeys.length).toFixed(1);
@@ -155,11 +169,19 @@ function renderQuestions() {
             avgSpan.textContent = avg;
             countSpan.textContent = voteKeys.length;
             votersList.textContent = `Voted by: ${voteKeys.join(', ')}`;
-            resultsSection.classList.remove('hidden');
-
+            
             if (voteKeys.length >= 6) {
                 card.classList.add('completed');
             }
+        } else {
+            avgSpan.textContent = '0.0';
+            countSpan.textContent = '0';
+            votersList.textContent = 'No votes yet';
+        }
+
+        // Freshers always see results section, voters only see it if there are votes
+        if (isFresher || voteKeys.length > 0) {
+            resultsSection.classList.remove('hidden');
         }
         
         questionsList.appendChild(node);
