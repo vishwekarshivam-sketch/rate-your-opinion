@@ -1,4 +1,4 @@
-const VALID_USERS = ['AJAY', 'SARVESH', 'SHIVAM', 'SARBJEET', 'OM'];
+const VALID_USERS = ['AJAY', 'SARVESH', 'SHIVAM', 'SARBJEET', 'OM', 'JATIN'];
 
 let currentUser = localStorage.getItem('ryo_user');
 let questionsData = [];
