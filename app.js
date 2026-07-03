@@ -70,11 +70,14 @@ async function loadQuestions() {
     questionsList.innerHTML = '<div class="loader">Loading questions...</div>';
     try {
         const res = await fetch('/api/questions');
-        if (!res.ok) throw new Error('Failed to fetch');
+        if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`Failed to fetch: ${res.status} ${errText}`);
+        }
         questionsData = await res.json();
         renderQuestions();
     } catch (err) {
-        questionsList.innerHTML = `<div class="error">Error loading questions. Are you running this on Vercel with KV set up?</div>`;
+        questionsList.innerHTML = `<div class="error">Error loading questions: ${err.message}</div>`;
         console.error(err);
     }
 }
