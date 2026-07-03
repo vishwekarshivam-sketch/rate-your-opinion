@@ -210,15 +210,12 @@ function renderQuestions() {
     return;
   }
 
-  const existingIds = new Set();
-  questionsList.querySelectorAll('.question-card').forEach(c => existingIds.add(c.dataset.questionId));
+  questionsList.innerHTML = '';
 
   const isFresher = currentUser === 'FRESHER';
   const fragment = document.createDocumentFragment();
 
   questionsData.forEach(q => {
-    if (existingIds.has(q.id)) return;
-
     const node = questionTemplate.content.cloneNode(true);
     const card = node.querySelector('.question-card');
     card.dataset.questionId = q.id;
@@ -256,15 +253,6 @@ function renderQuestions() {
   });
 
   questionsList.appendChild(fragment);
-
-  // Re-render all to ensure correct ordering if data changed
-  // Only reorder if we have all cards already
-  const allCards = [...questionsList.querySelectorAll('.question-card')];
-  if (allCards.length === questionsData.length) {
-    const idOrder = new Map(questionsData.map((q, i) => [q.id, i]));
-    allCards.sort((a, b) => idOrder.get(a.dataset.questionId) - idOrder.get(b.dataset.questionId));
-    allCards.forEach(c => questionsList.appendChild(c));
-  }
 }
 
 // ========== Vote ==========
